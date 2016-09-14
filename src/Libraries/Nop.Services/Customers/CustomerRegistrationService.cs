@@ -25,6 +25,7 @@ namespace Nop.Services.Customers
         private readonly IRewardPointService _rewardPointService;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly CustomerSettings _customerSettings;
+        private readonly IWorkContext _workContext;
 
         #endregion
 
@@ -39,6 +40,7 @@ namespace Nop.Services.Customers
         /// <param name="localizationService">Localization service</param>
         /// <param name="storeService">Store service</param>
         /// <param name="rewardPointService">Reward points service</param>
+        /// <param name="workContext">Work context</param>
         /// <param name="rewardPointsSettings">Reward points settings</param>
         /// <param name="customerSettings">Customer settings</param>
         public CustomerRegistrationService(ICustomerService customerService, 
@@ -47,6 +49,7 @@ namespace Nop.Services.Customers
             ILocalizationService localizationService,
             IStoreService storeService,
             IRewardPointService rewardPointService,
+            IWorkContext workContext,
             RewardPointsSettings rewardPointsSettings,
             CustomerSettings customerSettings)
         {
@@ -58,6 +61,7 @@ namespace Nop.Services.Customers
             this._rewardPointService = rewardPointService;
             this._rewardPointsSettings = rewardPointsSettings;
             this._customerSettings = customerSettings;
+            this._workContext = workContext;
         }
 
         #endregion
@@ -380,7 +384,7 @@ namespace Nop.Services.Customers
             if (!_customerSettings.UsernamesEnabled)
                 throw new NopException("Usernames are disabled");
 
-            if (!_customerSettings.AllowUsersToChangeUsernames)
+            if (!_customerSettings.AllowUsersToChangeUsernames && !_workContext.CurrentCustomer.IsAdmin())
                 throw new NopException("Changing usernames is not allowed");
 
             newUsername = newUsername.Trim();
